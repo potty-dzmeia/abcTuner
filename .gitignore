@@ -20,4 +20,4 @@ ipch
 *.sdf
 *.suo
 *.VC.db
-*.VC.VC.opendb
+*.VC.opendb
