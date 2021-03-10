@@ -5,6 +5,11 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "abcTuner", "abcTuner.vcxproj", "{7D9E13C1-4A55-4E43-B90E-4BCDB07A9D23}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTests", "UnitTests\UnitTests.vcxproj", "{1D361D52-91EA-40FA-8035-BEE5243A34A4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7D9E13C1-4A55-4E43-B90E-4BCDB07A9D23} = {7D9E13C1-4A55-4E43-B90E-4BCDB07A9D23}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +26,14 @@ Global
 		{7D9E13C1-4A55-4E43-B90E-4BCDB07A9D23}.Release|x64.Build.0 = Release|x64
 		{7D9E13C1-4A55-4E43-B90E-4BCDB07A9D23}.Release|x86.ActiveCfg = Release|Win32
 		{7D9E13C1-4A55-4E43-B90E-4BCDB07A9D23}.Release|x86.Build.0 = Release|Win32
+		{1D361D52-91EA-40FA-8035-BEE5243A34A4}.Debug|x64.ActiveCfg = Debug|x64
+		{1D361D52-91EA-40FA-8035-BEE5243A34A4}.Debug|x64.Build.0 = Debug|x64
+		{1D361D52-91EA-40FA-8035-BEE5243A34A4}.Debug|x86.ActiveCfg = Debug|Win32
+		{1D361D52-91EA-40FA-8035-BEE5243A34A4}.Debug|x86.Build.0 = Debug|Win32
+		{1D361D52-91EA-40FA-8035-BEE5243A34A4}.Release|x64.ActiveCfg = Release|x64
+		{1D361D52-91EA-40FA-8035-BEE5243A34A4}.Release|x64.Build.0 = Release|x64
+		{1D361D52-91EA-40FA-8035-BEE5243A34A4}.Release|x86.ActiveCfg = Release|Win32
+		{1D361D52-91EA-40FA-8035-BEE5243A34A4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
