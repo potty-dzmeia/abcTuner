@@ -42,6 +42,9 @@
     <ClCompile Include="..\imgui\backends\imgui_impl_win32.cpp">
       <Filter>imgui_backends</Filter>
     </ClCompile>
+    <ClCompile Include="tuner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\imgui\imstb_rectpack.h">
@@ -67,6 +70,9 @@
     </ClInclude>
     <ClInclude Include="..\imgui\backends\imgui_impl_win32.h">
       <Filter>imgui_backends</Filter>
+    </ClInclude>
+    <ClInclude Include="tuner.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
