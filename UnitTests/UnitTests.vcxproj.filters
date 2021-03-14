@@ -18,7 +18,10 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\tuner.h">
+    <ClInclude Include="..\src\myutils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\atu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -26,7 +29,7 @@
     <ClCompile Include="unittest1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\tuner.cpp">
+    <ClCompile Include="..\src\atu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

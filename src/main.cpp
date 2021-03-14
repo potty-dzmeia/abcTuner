@@ -1,13 +1,10 @@
-// Dear ImGui: standalone example application for DirectX 9
-// If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
-// Read online: https://github.com/ocornut/imgui/tree/master/docs
-
-
+#include "atu.h"
 #include "imgui.h"
 #include "imgui_impl_dx9.h"
 #include "imgui_impl_win32.h"
 #include <d3d9.h>
 #include <tchar.h>
+#include "myutils.h"
 
 // Data
 static LPDIRECT3D9              g_pD3D = NULL;
@@ -19,6 +16,8 @@ bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
 void ResetDevice();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+static void HelpMarker(const char* desc);
 
 // Main code
 int main(int, char**)
@@ -74,8 +73,10 @@ int main(int, char**)
 
 	// Our state
 	bool show_demo_window = true;
-	bool show_another_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+
+	static struct AtuRelays atu_relays = DEFAULT_AtuRelays;
 
 	// Main loop
 	MSG msg;
@@ -101,8 +102,8 @@ int main(int, char**)
 
 		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
 		/*if (show_demo_window)
-		    ImGui::ShowDemoWindow(&show_demo_window);*/
-
+		    ImGui::ShowDemoWindow(&show_demo_window);
+*/
 		    // FREQUENCY window
 		{
 			ImGui::Begin("TRX");
@@ -122,8 +123,6 @@ int main(int, char**)
 			ImGui::RadioButton("24 ", &freq_button, 7); ImGui::SameLine();
 			ImGui::RadioButton("28 ", &freq_button, 8);
 
-			ImGui::Text("%d", freq_button);
-
 			ImGui::End();
 		}
 
@@ -131,34 +130,54 @@ int main(int, char**)
 		{
 			ImGui::Begin("Antennas");
 
-			static int ant_button = 0;
+			ImGui::RadioButton("Ant 1", & (atu_relays.u8Antenna), 0);
+			ImGui::RadioButton("Ant 2", & (atu_relays.u8Antenna), 1);
+			ImGui::RadioButton("Ant 3", & (atu_relays.u8Antenna), 2);
 
-			ImGui::RadioButton("Ant 1", &ant_button, 0);
-			ImGui::RadioButton("Ant 2", &ant_button, 1);
-			ImGui::RadioButton("Ant 3", &ant_button, 2);
-
-			ImGui::Text("%d", ant_button);
 			ImGui::End();
 		}
+
+		// CONTROLS window
+		{
+			ImGui::Begin("Tune Controls");
+
+			static bool bTune = false;
+			ImGui::Checkbox("Tune", &bTune); ImGui::SameLine();	
+
+			ImGui::Button("AUTO");
+
+			static ImU16  step = 1;
+			
+			ImGui::InputScalar("C", ImGuiDataType_U16, &(atu_relays.u16C), &step, NULL, "%u");
+			ImGui::InputScalar("L", ImGuiDataType_U16, &(atu_relays.u16L), &step, NULL, "%u");
+			ImGui::Checkbox("C2", &(atu_relays.bC2));
+
+			atu_set_tune(&bTune);
+			atu_set_relays(atu_relays);
+
+			ImGui::End();		
+		}
+
+		
 
 		// DATA VISUALIZATION window
 		{
 			ImGui::Begin("DATA");
 
 			ImGui::ProgressBar(50, ImVec2(0.0f, 0.0f)); ImGui::SameLine();
-			ImGui::Text("SWR (coarse)");
+			ImGui::Text("SWR");
 
 			ImGui::ProgressBar(0.5, ImVec2(0.0f, 0.0f));  ImGui::SameLine();
-			ImGui::Text("V (forward)");
+			ImGui::Text("V_f");
 
 			ImGui::ProgressBar(0.5, ImVec2(0.0f, 0.0f));  ImGui::SameLine();
-			ImGui::Text("V(backward)");
+			ImGui::Text("V_r");
 
 			ImGui::ProgressBar(0.5, ImVec2(0.0f, 0.0f));  ImGui::SameLine();
-			ImGui::Text("V (ant)");
+			ImGui::Text("V_ant");
 
 			ImGui::ProgressBar(0.5, ImVec2(0.0f, 0.0f));  ImGui::SameLine();
-			ImGui::Text("V (PSU)");
+			ImGui::Text("V_psu");
 
 
 			ImGui::End();
@@ -168,41 +187,30 @@ int main(int, char**)
 		}
 
 
-		// CONTROLS window
+		// CONNECTION window
 		{
-			ImGui::Begin("Tune Controls");
-
-			static bool bTune = false;
-			ImGui::Checkbox("Tune", &bTune); ImGui::SameLine();
-
-			ImGui::Button("AUTO");
-
-			static ImU16  step = 1;
-			static ImU16  u16_v1 = 16384;
-			ImGui::InputScalar("C", ImGuiDataType_U16, &u16_v1, &step, NULL, "%u");
-
-			static ImU16  u16_v2 = 16384;
-			ImGui::InputScalar("L", ImGuiDataType_U16, &u16_v2, &step, NULL, "%u");
-
-			static bool bC2 = false;
-			ImGui::Checkbox("C2", &bC2);
-
-
-
+			ImGui::Begin("Connection");
+			ImGui::PushItemWidth(ImGui::GetFontSize() * -12); // Leave a fixed amount of width for labels (by passing a negative value), the rest goes to widgets.
+			
+			static bool bConnected = false; 
+			ImGui::Checkbox("Connect", &bConnected);
+		        static char str0[50] = "Com7";
+			ImGui::InputText("Comm port names", str0, IM_ARRAYSIZE(str0));
+			
+			if (bConnected)
+			{
+				bConnected = atu_connect(str0);
+			}
+			else
+			{
+				atu_disconnect();
+			}
+				
 			ImGui::End();
 		}
 
-
-		// 3. Show another simple window.
-		if (show_another_window)
-		{
-			ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-			ImGui::Text("Hello from another window!");
-			if (ImGui::Button("Close Me"))
-				show_another_window = false;
-			ImGui::End();
-		}
-
+		
+		
 		// Rendering
 		ImGui::EndFrame();
 		g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
@@ -301,4 +309,20 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 	return ::DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+
+// Helper to display a little (?) mark which shows a tooltip when hovered.
+// In your own code you may want to display an actual icon if you are using a merged icon fonts (see docs/FONTS.md)
+static void HelpMarker(const char* desc)
+{
+	ImGui::TextDisabled("(?)");
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::BeginTooltip();
+		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+		ImGui::TextUnformatted(desc);
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
+	}
 }

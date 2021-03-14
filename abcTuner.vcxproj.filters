@@ -42,7 +42,10 @@
     <ClCompile Include="..\imgui\backends\imgui_impl_win32.cpp">
       <Filter>imgui_backends</Filter>
     </ClCompile>
-    <ClCompile Include="tuner.cpp">
+    <ClCompile Include="..\imgui\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\atu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,8 +74,11 @@
     <ClInclude Include="..\imgui\backends\imgui_impl_win32.h">
       <Filter>imgui_backends</Filter>
     </ClInclude>
-    <ClInclude Include="tuner.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="src\myutils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\atu.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
