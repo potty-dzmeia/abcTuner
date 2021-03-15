@@ -26,11 +26,24 @@ namespace UnitTests
 			Assert::IsTrue(sizeof(S16) == 2);
 			Assert::IsTrue(sizeof(S32) == 4);
 			Assert::IsTrue(sizeof(S64) == 8);
-
-			char data[100];
-			strcpy(data, "hello test");
-			Assert::IsTrue(true);
 		}
 
+		TEST_METHOD(TestMethod2)
+		{
+			Assert::IsTrue(convert_C_pF(0) == 29);
+			Assert::IsTrue(convert_C_pF(1) == 44+29);
+			Assert::IsTrue(convert_C_pF(0x0800) == 1538 + 29);
+			Assert::IsTrue(convert_C_pF(0x0801) == 1538 + 44 + 29);
+			Assert::IsTrue(convert_C_pF(0x0F00) == 3280);
+			Assert::IsTrue(convert_C_pF(0x0FFF) == 3954);
+			
+
+			Assert::IsTrue(convert_L_nH(0) == 280);
+			Assert::IsTrue(convert_L_nH(1) == 650 + 280);
+			Assert::IsTrue(convert_L_nH(0x0800) == 23150 + 280);
+			Assert::IsTrue(convert_L_nH(0x0801) == 23150 + 650 + 280);
+			Assert::IsTrue(convert_L_nH(0x0F00) == 46540);
+			Assert::IsTrue(convert_L_nH(0x0FFF) == 55220);
+		}
 	};
 }

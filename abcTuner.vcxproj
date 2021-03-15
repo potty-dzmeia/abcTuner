@@ -125,6 +125,7 @@
     <ClCompile Include="..\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\atu.cpp" />
+    <ClCompile Include="src\CSerialPort.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +138,7 @@
     <ClInclude Include="..\imgui\imstb_textedit.h" />
     <ClInclude Include="..\imgui\imstb_truetype.h" />
     <ClInclude Include="src\atu.h" />
+    <ClInclude Include="src\CSerialPort.h" />
     <ClInclude Include="src\myutils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

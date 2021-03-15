@@ -162,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\atu.cpp" />
+    <ClCompile Include="..\src\CSerialPort.cpp" />
     <ClCompile Include="unittest1.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

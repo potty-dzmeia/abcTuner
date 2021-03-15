@@ -72,7 +72,6 @@ int main(int, char**)
 	//IM_ASSERT(font != NULL);
 
 	// Our state
-	bool show_demo_window = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 
@@ -150,7 +149,7 @@ int main(int, char**)
 			
 			ImGui::InputScalar("C", ImGuiDataType_U16, &(atu_relays.u16C), &step, NULL, "%u");
 			ImGui::InputScalar("L", ImGuiDataType_U16, &(atu_relays.u16L), &step, NULL, "%u");
-			ImGui::Checkbox("C2", &(atu_relays.bC2));
+			ImGui::Checkbox("high R", &(atu_relays.bC2));
 
 			atu_set_tune(&bTune);
 			atu_set_relays(atu_relays);
@@ -181,9 +180,6 @@ int main(int, char**)
 
 
 			ImGui::End();
-			bool b = true;
-
-			/*ImPlot::ShowDemoWindow(&b);*/
 		}
 
 
@@ -309,20 +305,4 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 	return ::DefWindowProc(hWnd, msg, wParam, lParam);
-}
-
-
-// Helper to display a little (?) mark which shows a tooltip when hovered.
-// In your own code you may want to display an actual icon if you are using a merged icon fonts (see docs/FONTS.md)
-static void HelpMarker(const char* desc)
-{
-	ImGui::TextDisabled("(?)");
-	if (ImGui::IsItemHovered())
-	{
-		ImGui::BeginTooltip();
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-		ImGui::TextUnformatted(desc);
-		ImGui::PopTextWrapPos();
-		ImGui::EndTooltip();
-	}
 }
