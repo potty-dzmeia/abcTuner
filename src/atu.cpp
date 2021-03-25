@@ -174,7 +174,7 @@ bool atu_get_data(struct AtuData* out_data)
 {
 	if (!port.IsOpen())
 	{
-		DEBUG_PRINT("Can't read Data. Not connected to Tuner.");
+		//DEBUG_PRINT("Can't read Data. Not connected to Tuner.");
 		return false;
 	}
 
@@ -201,6 +201,14 @@ bool atu_get_data(struct AtuData* out_data)
 	out_data->u16Vr = buffer[6] << 8 | buffer[5];
 	out_data->u16Vant = buffer[8] << 8 | buffer[7];
 	out_data->u16NotUsed = buffer[10] << 8 | buffer[9];
+
+	// Calculate VSWR
+	if (out_data->u16Vf == out_data->u16Vr)
+		out_data->fSwr = SWR_MAX;
+	else if(out_data->u16Vf < out_data->u16Vr)
+		out_data->fSwr = SWR_MAX;
+	else
+		out_data->fSwr = (float) (out_data->u16Vf + out_data->u16Vr) / out_data->u16Vf - out_data->u16Vr;
 
 	DEBUG_PRINT("COMMAND_GET_DATA successfully finished");
 	return true;

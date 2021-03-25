@@ -5,6 +5,7 @@
 #include <d3d9.h>
 #include <tchar.h>
 #include "myutils.h"
+#include <stdio.h>
 
 // Data
 static LPDIRECT3D9              g_pD3D = NULL;
@@ -18,6 +19,10 @@ void ResetDevice();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 static void HelpMarker(const char* desc);
+
+float toStatusbarScale(int x, int min, int max);
+float toStatusbarScale(float x, float min, float max);
+
 
 // Main code
 int main(int, char**)
@@ -100,9 +105,11 @@ int main(int, char**)
 		ImGui::NewFrame();
 
 		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-		/*if (show_demo_window)
-		    ImGui::ShowDemoWindow(&show_demo_window);
-*/
+		/*static bool show_demo_window = true;
+		ImGui::ShowDemoWindow(&show_demo_window);*/
+
+		static bool bTune = false;
+
 		    // FREQUENCY window
 		{
 			ImGui::Begin("TRX");
@@ -140,15 +147,63 @@ int main(int, char**)
 		{
 			ImGui::Begin("Tune Controls");
 
-			static bool bTune = false;
-			ImGui::Checkbox("Tune", &bTune); ImGui::SameLine();	
+			
+			ImGui::Checkbox("Tune", &bTune); 
+			ImGui::SameLine();	
 
 			ImGui::Button("AUTO");
 
-			static ImU16  step = 1;
+			static U16 step = 1;
+			static U16 min = 1, max = 50;
+			ImGui::SliderScalar("Step", ImGuiDataType_U8, &step, &min, &max, "%u");
+
+
+			//ImGui::InputScalar("C", ImGuiDataType_U16, &(atu_relays.u16C), &step, NULL, "%u", ImGuiInputTextFlags_CharsHexadecimal);
+			float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
+			ImGui::PushButtonRepeat(true);
+			if (ImGui::ArrowButton("left##1", ImGuiDir_Left)) 
+			{ 
+				atu_relays.u16C-= step;
+				if (atu_relays.u16C > C_MAX)
+					atu_relays.u16C = C_MAX;
+			}
+			ImGui::SameLine(0.0f, spacing);
+			if (ImGui::ArrowButton("right##1", ImGuiDir_Right)) 
+			{ 
+				atu_relays.u16C += step; 
+				if (atu_relays.u16C > C_MAX)
+					atu_relays.u16C = 0;
+			}
+			ImGui::SameLine();
+			ImGui::Text("C");
+			ImGui::SameLine(0.0f, ImGui::GetStyle().IndentSpacing);
+			ImGui::PopButtonRepeat();
+
+			ImGui::PushButtonRepeat(true);
+			if (ImGui::ArrowButton("left##2", ImGuiDir_Left)) 
+			{ 
+				atu_relays.u16L -= step; 
+				if (atu_relays.u16L > L_MAX)
+					atu_relays.u16L = L_MAX;
+			}
+			ImGui::SameLine(0.0f, spacing);
+			if (ImGui::ArrowButton("right##2", ImGuiDir_Right)) 
+			{ 
+				atu_relays.u16L += step; 
+				if (atu_relays.u16L > L_MAX)
+					atu_relays.u16L = 0;
+			}
+			ImGui::PopButtonRepeat();
+			ImGui::SameLine();
+			ImGui::Text("L");
+
+			static U16 minC = 0, maxC = C_MAX;
+			ImGui::SliderScalar("C", ImGuiDataType_U16, &(atu_relays.u16C), &minC, &maxC, "%u");
 			
-			ImGui::InputScalar("C", ImGuiDataType_U16, &(atu_relays.u16C), &step, NULL, "%u");
-			ImGui::InputScalar("L", ImGuiDataType_U16, &(atu_relays.u16L), &step, NULL, "%u");
+
+			static U16 minL = 0, maxL = L_MAX;
+			ImGui::SliderScalar("L", ImGuiDataType_U16, &(atu_relays.u16L), &minL, &maxL, "%u");
+			
 			ImGui::Checkbox("high R", &(atu_relays.bC2));
 
 			atu_set_tune(&bTune);
@@ -162,21 +217,31 @@ int main(int, char**)
 		// DATA VISUALIZATION window
 		{
 			ImGui::Begin("DATA");
+			
+			static struct AtuData atu_data = DEFAULT_AtuData;
 
-			ImGui::ProgressBar(50, ImVec2(0.0f, 0.0f)); ImGui::SameLine();
+			atu_get_data(&atu_data);
+			static char overlay[20];
+
+			sprintf(overlay, "%0.2f", atu_data.fSwr);
+			ImGui::ProgressBar(toStatusbarScale(atu_data.fSwr, 1.0f, (float)SWR_MAX), ImVec2(0.0f, 0.0f), overlay); ImGui::SameLine();
 			ImGui::Text("SWR");
 
-			ImGui::ProgressBar(0.5, ImVec2(0.0f, 0.0f));  ImGui::SameLine();
+			sprintf(overlay, "%d", atu_data.u16Vf);
+			ImGui::ProgressBar(toStatusbarScale(atu_data.u16Vf, 1, ADC_MAX), ImVec2(0.0f, 0.0f), overlay);  ImGui::SameLine();
 			ImGui::Text("V_f");
 
-			ImGui::ProgressBar(0.5, ImVec2(0.0f, 0.0f));  ImGui::SameLine();
+			sprintf(overlay, "%d", atu_data.u16Vr);
+			ImGui::ProgressBar(toStatusbarScale(atu_data.u16Vr, 1, ADC_MAX), ImVec2(0.0f, 0.0f), overlay);  ImGui::SameLine();
 			ImGui::Text("V_r");
 
-			ImGui::ProgressBar(0.5, ImVec2(0.0f, 0.0f));  ImGui::SameLine();
+			sprintf(overlay, "%d", atu_data.u16Vant);
+			ImGui::ProgressBar(toStatusbarScale(atu_data.u16Vant, 1, ADC_MAX), ImVec2(0.0f, 0.0f), overlay);  ImGui::SameLine();
 			ImGui::Text("V_ant");
 
-			ImGui::ProgressBar(0.5, ImVec2(0.0f, 0.0f));  ImGui::SameLine();
-			ImGui::Text("V_psu");
+			sprintf(overlay, "%d", atu_data.u16NotUsed);
+			ImGui::ProgressBar(toStatusbarScale(atu_data.u16Vf, 1, ADC_MAX), ImVec2(0.0f, 0.0f), overlay);  ImGui::SameLine();
+			ImGui::Text("V_notused");
 
 
 			ImGui::End();
@@ -191,7 +256,7 @@ int main(int, char**)
 			static bool bConnected = false; 
 			ImGui::Checkbox("Connect", &bConnected);
 		        static char str0[50] = "Com7";
-			ImGui::InputText("Comm port names", str0, IM_ARRAYSIZE(str0));
+			ImGui::InputText("Comm port name", str0, IM_ARRAYSIZE(str0));
 			
 			if (bConnected)
 			{
@@ -240,7 +305,28 @@ int main(int, char**)
 	return 0;
 }
 
+
 // Helper functions
+
+// Linear transformation of X [min to max] to  the range of [0 to 1]
+float toStatusbarScale(int x, int min, int max)
+{
+	float res;
+
+	res = ((float)x - (float)min) / ((float)max - (float)min);
+
+	return res;
+}
+
+// Linear transformation of X [min to max] to  the range of [0 to 1]
+float toStatusbarScale(float x, float min, float max)
+{
+	float res;
+
+	res = (x - min) / (max - min);
+
+	return res;
+}
 
 bool CreateDeviceD3D(HWND hWnd)
 {

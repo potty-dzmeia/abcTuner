@@ -28,7 +28,7 @@ bool CSerialPort::Open(const char* port_name)
 	DCB dcb;
 	dcb.DCBlength = sizeof(dcb);
 	GetCommState(hCom, &dcb);
-	dcb.BaudRate = 9600;
+	dcb.BaudRate = 38400;
 	dcb.ByteSize = 8;
 	dcb.StopBits = ONESTOPBIT;
 	dcb.Parity = NOPARITY;
